@@ -1,0 +1,6 @@
+requests
+requests[socks]
+uuid
+aiogram==2.25.1
+aiohttp-socks
+python-dotenv
