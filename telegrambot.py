@@ -184,10 +184,13 @@ async def generate_vps_list(callback_query: types.CallbackQuery, callback_data):
     user = cmds.LoadUserData(callback_query.from_user.id)
     msg = user.panels[callback_data['d_1']].GetInfo()
     cmds.SaveUserData(user)
-    for vpsid, vps in user.panels[callback_data['d_1']].VPSList().items():
-        kb.row(InlineKeyboardButton(f"({vpsid}) {vps.hostname} {next(iter(vps.ips.values()))}",
-                                    callback_data=cb_3.new(act="getVPS",
-                                                           d_1=callback_data['d_1'], d_2=vpsid)))
+    try:
+        for vpsid, vps in user.panels[callback_data['d_1']].VPSList().items():
+            kb.row(InlineKeyboardButton(f"({vpsid}) {vps.hostname} {next(iter(vps.ips.values()))}",
+                                        callback_data=cb_3.new(act="getVPS",
+                                                               d_1=callback_data['d_1'], d_2=vpsid)))
+    except:
+        pass
     kb.add(btn_removePanel).add(btn_MainMenu)
     await callback_query.message.edit_text(msg, reply_markup=kb)
 
