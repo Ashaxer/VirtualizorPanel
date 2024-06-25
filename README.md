@@ -1,2 +1,2 @@
 # VirtualizorPanel
-Multiple Virtualizor Panel, VPS Manager with Bandwidth Checker and Notifier option 
+Multiple Virtualizor Panel and VPS Manager with Bandwidth Checker and Notifier option under TelegramBot
