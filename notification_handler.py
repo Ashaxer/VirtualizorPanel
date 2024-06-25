@@ -101,7 +101,10 @@ def CheckOff(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn,
 
 
 users = cmds.LoadData()
-for uid, user in users.items():
-    for info in user.NotiLog():
-        if info['Notify']:
-            CheckOn(uid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info['warn'], info['sleep'], info['warnsleep'])
+try:
+    for uid, user in users.items():
+        for info in user.NotiLog():
+            if info['Notify']:
+                CheckOn(uid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info['warn'], info['sleep'], info['warnsleep'])
+except:
+    pass
