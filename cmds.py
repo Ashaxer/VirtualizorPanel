@@ -75,7 +75,7 @@ class VirtualizorPanel:
             Json = result.json()
             self.panelid = Json['uid']
             msg = f"""🎛 PanelName: {self.nickname}
-🆔: {self.panelid}
+🆔 {self.panelid}
 🌐 Address: {self.address}
 📋 UserName: {Json['username']}
 📋 FirstName: {Json['preferences']['fname']}
