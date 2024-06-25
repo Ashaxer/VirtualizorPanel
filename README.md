@@ -46,8 +46,8 @@ Insert your Telegram api_token in front of TELEGRAM_BOT_TOKEN
 You need to have python and requests on your machine:
 Linux:
 ```bash
-apt-get update
-apt-get upgrade
+apt-get update -y
+apt-get upgrade -y
 apt-get install python3
 apt-get install python3-pip
 pip install -r requirements.txt
