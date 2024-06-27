@@ -248,9 +248,6 @@ class Notification:
             "Notify": self.notify
             }
 
-    def NotifyStatus(self):
-        return self.notify
-
     def ChangeWarn(self, warn):
         self.warn = int(warn)
 

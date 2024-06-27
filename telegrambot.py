@@ -200,7 +200,7 @@ async def generate_vps_info(callback_query: types.CallbackQuery, callback_data):
     user = cmds.LoadUserData(callback_query.from_user.id)
     vpslist = user.panels[callback_data['d_1']].VPSList()
     cmds.SaveUserData(user)
-    if vpslist[callback_data['d_2']].Notification.NotifyStatus():
+    if vpslist[callback_data['d_2']].Notification.notify:
         btn_text = "🔔 Notification Settings"
     else:
         btn_text = "🔕 Notification Settings"
@@ -265,12 +265,8 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
             user.panels[panel].vpss[vps].Notification.ChangeWarnSleep(method_val)
             warnsleep = user.panels[panel].vpss[vps].Notification.warnsleep
         elif method == "notifyChange":
-            if method_val == "False":
-                method_val = False
-                CheckOff(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)
-            elif method_val == "True":
-                method_val = True
-                CheckOn(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)
+            if method_val == "False": method_val = False
+            elif method_val == "True": method_val = True
             user.panels[panel].vpss[vps].Notification.ChangeNotify(method_val)
             notify = user.panels[panel].vpss[vps].Notification.notify
     cmds.SaveUserData(user)
@@ -317,10 +313,51 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     kb.row(decore_warnsleep,btn_warnsleep_1,btn_warnsleep_2,btn_warnsleep_3)
     kb.row(decore_notify,btn_notify_no,btn_notify_yes)
 
-    btn_back = InlineKeyboardButton("🔙 Back", callback_data=cb_3.new(act="getVPS", d_1=panel, d_2=vps))
-    kb.add(btn_back).add(btn_MainMenu)
+    btn_save = InlineKeyboardButton("💾 Save", callback_data=cb_3.new(act="notifSave", d_1=panel, d_2=vps))
+    kb.add(btn_save).add(btn_MainMenu)
     await callback_query.message.edit_text(msg, reply_markup=kb)
 
+@dp.callback_query_handler(cb_3.filter(act="notifSave"))
+async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
+    user = cmds.LoadUserData(callback_query.from_user.id)
+    kb = InlineKeyboardMarkup()
+
+    #Gather information
+    userid = callback_query.from_user.id
+    panel = callback_data['d_1']
+    vps = callback_data['d_2']
+    warn = user.panels[panel].vpss[vps].Notification.warn
+    sleep = user.panels[panel].vpss[vps].Notification.sleep
+    warnsleep = user.panels[panel].vpss[vps].Notification.warnsleep
+    notify = user.panels[panel].vpss[vps].Notification.notify
+    address = user.panels[panel].address
+    api_key = user.panels[panel].api_key
+    api_pass = user.panels[panel].api_pass
+    panelid = user.panels[panel].panelid
+    nickname = user.panels[panel].nickname
+
+    #Stop the notification task
+    CheckOff(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)
+
+    #Start the notification task if is enabled
+    if notify: CheckOn(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)
+
+    vpslist = user.panels[callback_data['d_1']].VPSList()
+    cmds.SaveUserData(user)
+
+    if vpslist[callback_data['d_2']].Notification.notify:
+        btn_text = "🔔 Notification Settings"
+    else:
+        btn_text = "🔕 Notification Settings"
+
+    btn_notify = InlineKeyboardButton(btn_text,
+                                      callback_data=cb_5.new(act="notifSet", d_1=callback_data['d_1'],
+                                                             d_2=callback_data['d_2'], d_3=False, d_4=False))
+
+    kb = InlineKeyboardMarkup().add(btn_notify).add(btn_MainMenu)
+    await callback_query.message.edit_text(f"""✅ Notification Settings Saved!
+==============
+{vpslist[callback_data['d_2']].MainInfo()}""", reply_markup=kb)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
