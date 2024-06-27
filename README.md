@@ -126,10 +126,13 @@ git clone https://github.com/Ashaxer/VirtualizorPanel
 cd VirtualizorPanel
 ```
 
-
 after reinstalling the program, restore the backedup files and rerun the application:
+Linux:
 ```bash
 cp /var/tmp/VP-Backup/config.env /root/VirtualizorPanel/config.env
 cp /var/tmp/VP-Backup/database.pkl /root/VirtualizorPanel/database.pkl
 screen -dmS VirtualizorPanel sh -c 'cd /root/VirtualizorPanel/ && /usr/bin/python3 telegrambot.py'
 ```
+
+Windows:
+Copy database.pkl and config.env files (which you backed up earlier) into the extracted application folder and run the "telegrambot.py" file
