@@ -1,4 +1,5 @@
-pkill -r "telegrambot.py"
+screen -XS VirtualizorPanel quit
+pkill -f "telegrambot.py"
 
 mkdir /var/tmp/VP-Backup
 
