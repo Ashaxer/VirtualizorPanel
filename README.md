@@ -18,19 +18,14 @@ To gain api access of your Virtualizor account:
 ### Virtualizor Panel IP
 The IP address of your Virtualizor Panel IP given to you by the administrator, Usualy ends with 4083 port!
 
-# Setting up the script
+# Install
 Linux:
-You can use Install or Update scripts to do these actions.
-To install:
+You can use Install script to do these actions.
 ```bash
 bash <(curl -Ls https://raw.githubusercontent.com/Ashaxer/VirtualizorPanel/main/install.sh)
 ```
 
-To update:
-```bash
-<(curl -Ls https://raw.githubusercontent.com/Ashaxer/VirtualizorPanel/main/update.sh)
-```
-To install manually:
+or you can install manually:
 ## Clone the project:
 ```bash
 cd
@@ -98,20 +93,42 @@ Although you can set this command to run every startup using following line:
 Windows:
 Double click the telegrambot.py file...?
 
-To Update Manually:
-simply backup these two files somewhere:
+#Update
+Linux:
+You can use update script to do these actions.
+```bash
+<(curl -Ls https://raw.githubusercontent.com/Ashaxer/VirtualizorPanel/main/update.sh)
+```
+
+or you can update it manually:
+to achieve that, simply backup these two files somewhere:
 database.pkl, config.env
+
+Linux:
 ```bash
 mkdir /var/tmp/VP-Backup
 cp /root/VirtualizorPanel/config.env /var/tmp/VP-Backup/config.env
 cp /root/VirtualizorPanel/database.pkl /var/tmp/VP-Backup/database.pkl
 ```
 
-Remove the application folder and follow the Install process again
-after reinstalling the program, close the application process, restore the backedup files and rerun the application:
+Windows:
+Go to the application folder and copy database.pkl and config.env files somewhere else.
+
+
+To update, close the application and remove it's folder and follow the Install process again
 ```bash
 screen -XS VirtualizorPanel quit
 pkill -f "telegrambot.py"
+
+cd
+rm -rf /root/VirtualizorPanel
+git clone https://github.com/Ashaxer/VirtualizorPanel
+cd VirtualizorPanel
+```
+
+
+after reinstalling the program, restore the backedup files and rerun the application:
+```bash
 cp /var/tmp/VP-Backup/config.env /root/VirtualizorPanel/config.env
 cp /var/tmp/VP-Backup/database.pkl /root/VirtualizorPanel/database.pkl
 screen -dmS VirtualizorPanel sh -c 'cd /root/VirtualizorPanel/ && /usr/bin/python3 telegrambot.py'
