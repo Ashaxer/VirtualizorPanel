@@ -13,13 +13,13 @@ while [[ -z "$tk" ]]; do
     if [[ $tk == $'\0' ]]; then
         echo "Invalid input. Token cannot be empty."
         unset tk
-    fi
+    #fi
 done
 
 while [[ -z "$px" ]]; do
     echo "Proxy (optional): "
     read -r px
-    fi
+    #fi
 done
 
 
@@ -32,7 +32,7 @@ while [[ -z "$crontabs" ]]; do
     elif [[ ! $crontabs =~ ^[yn]$ ]]; then
         echo "${crontabs} is not a valid option. Please choose y or n."
         unset crontabs
-    fi
+    #fi
 done
 
 cat > "/root/VirtualizorPanel/config.env" <<EOL
