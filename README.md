@@ -97,7 +97,7 @@ Double click the telegrambot.py file...?
 Linux:
 You can use update script to do these actions.
 ```bash
-<(curl -Ls https://raw.githubusercontent.com/Ashaxer/VirtualizorPanel/main/update.sh)
+bash <(curl -Ls https://raw.githubusercontent.com/Ashaxer/VirtualizorPanel/main/update.sh)
 ```
 
 or you can update it manually:
