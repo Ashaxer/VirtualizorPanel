@@ -19,6 +19,7 @@ done
 while [[ -z "$px" ]]; do
     echo "Proxy (optional): "
     read -r px
+    break
 done
 
 
@@ -42,6 +43,8 @@ TELEGRAM_PROXY = ${px}
 EOL
 
 if [[ "$crontabs" == "y" ]]; then
-# create crontabs
-{ crontab -l -u root; echo "@reboot /bin/bash screen -dmS VirtualizorPanel sh -c 'cd /root/VirtualizorPanel/ && /usr/bin/python3 telegrambot.py' >/dev/null 2>&1"; } | crontab -u root -
+    # create crontabs
+    { crontab -l -u root; echo "@reboot /bin/bash screen -dmS VirtualizorPanel sh -c 'cd /root/VirtualizorPanel/ && /usr/bin/python3 telegrambot.py' >/dev/null 2>&1"; } | crontab -u root -
 fi
+
+screen -dmS VirtualizorPanel sh -c 'cd /root/VirtualizorPanel/ && /usr/bin/python3 telegrambot.py'
