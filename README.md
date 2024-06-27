@@ -93,7 +93,7 @@ Although you can set this command to run every startup using following line:
 Windows:
 Double click the telegrambot.py file...?
 
-#Update
+# Update
 Linux:
 You can use update script to do these actions.
 ```bash
