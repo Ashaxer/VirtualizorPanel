@@ -48,3 +48,5 @@ if [[ "$crontabs" == "y" ]]; then
 fi
 
 screen -dmS VirtualizorPanel sh -c 'cd /root/VirtualizorPanel/ && /usr/bin/python3 telegrambot.py'
+
+echo "Bot started"
