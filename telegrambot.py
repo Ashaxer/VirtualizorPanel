@@ -337,7 +337,7 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     nickname = user.panels[panel].nickname
 
     #Stop the notification task
-    CheckOff(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)
+    CheckOff(userid, address, api_key, api_pass, panelid, vps, nickname)
 
     #Start the notification task if is enabled
     if notify: CheckOn(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)

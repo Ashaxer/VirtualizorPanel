@@ -86,18 +86,23 @@ def CheckOn(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, 
         print(f"Started thread with args: {userid}, {address}, {api_key}, {api_pass}, {panelid}, {vpsid}, {nickname}, {warn}, {tsleep}, {warnsleep}")
 
 
-def CheckOff(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, tsleep, warnsleep):
+def CheckOff(userid, address, api_key, api_pass, panelid, vpsid, nickname):
     global threads
-    thread_key = (userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, tsleep, warnsleep)
+    keys_to_stop = []
+    thread_key = (userid, address, api_key, api_pass, panelid, vpsid, nickname)
 
     with lock:
-        if thread_key in threads:
-            thread, stop_event = threads[thread_key]
-            stop_event.set()
-            del threads[thread_key]
-            print(f"Stopped thread with args: {userid}, {address}, {api_key}, {api_pass}, {panelid}, {vpsid}, {nickname}, {warn}, {tsleep}, {warnsleep}")
+        for thread_key in threads.keys():
+            if (thread_key[0], thread_key[1], thread_key[2], thread_key[3], thread_key[4], thread_key[5], thread_key[6]) == (userid, address, api_key, api_pass, panelid, vpsid, nickname):
+                keys_to_stop.append(thread_key)
+        if len(keys_to_stop) == 0:
+            print(f"No thread running with args: {userid}, {address}, {api_key}, {api_pass}, {panelid}, {vpsid}, {nickname}")
         else:
-            print(f"No thread running with args: {userid}, {address}, {api_key}, {api_pass}, {panelid}, {vpsid}, {nickname}, {warn}, {tsleep}, {warnsleep}")
+            for key in keys_to_stop:
+                thread, stop_event = threads[key]
+                stop_event.set()
+                del threads[thread_key]
+                print(f"Stopped thread with args: {key[0]}, {key[1]}, {key[2]}, {key[3]}, {key[4]}, {key[5]}, {key[5]}, {key[7]}, {key[8]}, {key[9]}")
 
 
 users = cmds.LoadData()
