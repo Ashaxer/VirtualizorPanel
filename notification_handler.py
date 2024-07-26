@@ -2,7 +2,6 @@ import threading
 import json
 import requests
 import time
-import cmds
 import urllib3
 import socks
 import dotenv
@@ -103,13 +102,3 @@ def CheckOff(userid, address, api_key, api_pass, panelid, vpsid, nickname):
                 stop_event.set()
                 del threads[thread_key]
                 print(f"Stopped thread with args: {key[0]}, {key[1]}, {key[2]}, {key[3]}, {key[4]}, {key[5]}, {key[5]}, {key[7]}, {key[8]}, {key[9]}")
-
-
-users = cmds.LoadData()
-try:
-    for uid, user in users.items():
-        for info in user.NotiLog():
-            if info['Notify']:
-                CheckOn(uid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info['warn'], info['sleep'], info['warnsleep'])
-except:
-    pass
