@@ -141,9 +141,11 @@ class VirtualizorPanel:
                 Json = listvs_result.json()["vs"]
                 for vpsid, vps in self.vpss.items():
                     if vpsid not in Json:
-                        vps.obsolete = True
+                        vps.isObsolete = True
                         vps.Notification.notify = False
                         NotificationHandleCheck(self.userid)
+                    else:
+                        vps.isObsolete = False
             except:
                 params = {"act": "listvs",
                           "api": "json",
@@ -158,6 +160,8 @@ class VirtualizorPanel:
                             vps.isObsolete = True
                             vps.Notification.notify = False
                             NotificationHandleCheck(self.userid)
+                        else:
+                            vps.isObsolete = False
                 except Exception as e:
                     print(e)
         else:
@@ -174,6 +178,8 @@ class VirtualizorPanel:
                         vps.isObsolete = True
                         vps.Notification.notify = False
                         NotificationHandleCheck(self.userid)
+                    else:
+                        vps.isObsolete = False
             except Exception as e:
                 print(e)
         SmartSave(self)
