@@ -18,8 +18,12 @@ class User:
                   "api": "json",
                   "apikey": api_key,
                   "apipass": api_pass}
-        url = f"https://{address}/index.php"
-        result = requests.post(url, params=params, verify=False)
+        try:
+            url = f"https://{address}/index.php"
+            result = requests.post(url, params=params, verify=False)
+        except:
+            url = f"http://{address}/index.php"
+            result = requests.post(url, params=params, verify=False)
         try:
             if int(result.json()["uid"]) > 0: return int(result.json()["uid"])
         except:
@@ -30,7 +34,7 @@ class User:
     def AddPanel(self, address, api_key, api_pass, nickname):
         uid = self.verify_api(address, api_key, api_pass)
         if uid and self.panels.get(uid) is None:
-            self.panels[str(uid)] = VirtualizorPanel(self.userid, address, api_key, api_pass, nickname)
+            self.panels[str(uid)] = VirtualizorPanel(self.userid, address, api_key, api_pass, nickname, str(uid))
             SmartSave(self)
             return True
         elif uid:
@@ -59,12 +63,13 @@ class User:
         return output
 
 class VirtualizorPanel:
-    def __init__(self, userid, address, api_key, api_pass, nickname):
+    def __init__(self, userid, address, api_key, api_pass, nickname, panelid):
         self.userid = userid
         self.address = address
         self.api_key = api_key
         self.api_pass = api_pass
         self.nickname = nickname
+        self.panelid = panelid
         self.vpss = {}
         SmartSave(self)
     def GetInfo(self):
@@ -73,8 +78,12 @@ class VirtualizorPanel:
                   "api": "json",
                   "apikey": self.api_key,
                   "apipass": self.api_pass}
-        url = f"https://{self.address}/index.php"
-        result = requests.post(url, params=params, verify=False)
+        try:
+            url = f"https://{self.address}/index.php"
+            result = requests.post(url, params=params, verify=False)
+        except:
+            url = f"http://{self.address}/index.php"
+            result = requests.post(url, params=params, verify=False)
         try:
             Json = result.json()
             self.panelid = Json['uid']
@@ -95,8 +104,12 @@ class VirtualizorPanel:
                   "api": "json",
                   "apikey": self.api_key,
                   "apipass": self.api_pass}
-        url = f"https://{self.address}/index.php"
-        result = requests.post(url, params=params, verify=False)
+        try:
+            url = f"https://{self.address}/index.php"
+            result = requests.post(url, params=params, verify=False)
+        except:
+            url = f"http://{self.address}/index.php"
+            result = requests.post(url, params=params, verify=False)
         try:
             Json = result.json()["vs"]
             SmartSave(self)
@@ -109,8 +122,12 @@ class VirtualizorPanel:
                   "api": "json",
                   "apikey": self.api_key,
                   "apipass": self.api_pass}
-        url = f"https://{self.address}/index.php"
-        result = requests.post(url, params=params, verify=False)
+        try:
+            url = f"https://{self.address}/index.php"
+            result = requests.post(url, params=params, verify=False)
+        except:
+            url = f"http://{self.address}/index.php"
+            result = requests.post(url, params=params, verify=False)
         self.CheckObsolete(result)
         try:
             Json = result.json()["vs"]
@@ -151,8 +168,12 @@ class VirtualizorPanel:
                           "api": "json",
                           "apikey": self.api_key,
                           "apipass": self.api_pass}
-                url = f"https://{self.address}/index.php"
-                result = requests.post(url, params=params, verify=False)
+                try:
+                    url = f"https://{self.address}/index.php"
+                    result = requests.post(url, params=params, verify=False)
+                except:
+                    url = f"http://{self.address}/index.php"
+                    result = requests.post(url, params=params, verify=False)
                 try:
                     Json = result.json()["vs"]
                     for vpsid, vps in self.vpss.items():
@@ -169,8 +190,12 @@ class VirtualizorPanel:
                       "api": "json",
                       "apikey": self.api_key,
                       "apipass": self.api_pass}
-            url = f"https://{self.address}/index.php"
-            result = requests.post(url, params=params, verify=False)
+            try:
+                url = f"https://{self.address}/index.php"
+                result = requests.post(url, params=params, verify=False)
+            except:
+                url = f"http://{self.address}/index.php"
+                result = requests.post(url, params=params, verify=False)
             try:
                 Json = result.json()["vs"]
                 for vpsid, vps in self.vpss.items():
