@@ -26,7 +26,7 @@ def Startup_Notifications():
 
 API_TOKEN = dotenv.get_key("config.env", "TELEGRAM_BOT_TOKEN")
 TELEGRAM_PROXY = dotenv.get_key("config.env", "TELEGRAM_PROXY")
-ITEM_PER_PAGE=2
+ITEM_PER_PAGE=10
 # States
 class Form(StatesGroup):
     getPanelName = State()
@@ -335,29 +335,29 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
         decore_warnsleep = InlineKeyboardButton("📵 :", callback_data=".")
         decore_notify = InlineKeyboardButton("🔔 :", callback_data=".")
 
-        btn_warn_1 = InlineKeyboardButton("50GB", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="50"))
-        btn_warn_2 = InlineKeyboardButton("100GB", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="100"))
-        btn_warn_3 = InlineKeyboardButton("250GB", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="250"))
-        btn_warn_4 = InlineKeyboardButton("500GB", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="500"))
+        btn_warn_1 = InlineKeyboardButton("50GB", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="50", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_warn_2 = InlineKeyboardButton("100GB", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="100", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_warn_3 = InlineKeyboardButton("250GB", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="250", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_warn_4 = InlineKeyboardButton("500GB", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnChng", d_4="500", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
         if warn == 50: btn_warn_1.text = "🔘 " + btn_warn_1.text
         elif warn == 100: btn_warn_2.text = "🔘 " + btn_warn_2.text
         elif warn == 250: btn_warn_3.text = "🔘 " + btn_warn_3.text
         elif warn == 500: btn_warn_4.text = "🔘 " + btn_warn_4.text
 
-        btn_sleep_1 = InlineKeyboardButton("5m", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="sleepChng", d_4="300"))
-        btn_sleep_2 = InlineKeyboardButton("15m", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="sleepChng", d_4="900"))
+        btn_sleep_1 = InlineKeyboardButton("5m", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="sleepChng", d_4="300", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_sleep_2 = InlineKeyboardButton("15m", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="sleepChng", d_4="900", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
         if sleep == 300: btn_sleep_1.text = "🔘 " + btn_sleep_1.text
         elif sleep == 900: btn_sleep_2.text = "🔘 " + btn_sleep_2.text
 
-        btn_warnsleep_1 = InlineKeyboardButton("30m", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnsleepChng", d_4="1800"))
-        btn_warnsleep_2 = InlineKeyboardButton("1h", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnsleepChng", d_4="3600"))
-        btn_warnsleep_3 = InlineKeyboardButton("2h", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnsleepChng", d_4="7200"))
+        btn_warnsleep_1 = InlineKeyboardButton("30m", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnsleepChng", d_4="1800", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_warnsleep_2 = InlineKeyboardButton("1h", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnsleepChng", d_4="3600", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_warnsleep_3 = InlineKeyboardButton("2h", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="warnsleepChng", d_4="7200", d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
         if warnsleep == 1800: btn_warnsleep_1.text = "🔘 " + btn_warnsleep_1.text
         elif warnsleep == 3600: btn_warnsleep_2.text = "🔘 " + btn_warnsleep_2.text
         elif warnsleep == 7200: btn_warnsleep_3.text = "🔘 " + btn_warnsleep_3.text
 
-        btn_notify_no = InlineKeyboardButton("Off", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="notifyChange", d_4=False))
-        btn_notify_yes = InlineKeyboardButton("On", callback_data=cb_5.new(act="notifSet", d_1=panel, d_2=vps, d_3="notifyChange", d_4=True))
+        btn_notify_no = InlineKeyboardButton("Off", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="notifyChange", d_4=False, d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
+        btn_notify_yes = InlineKeyboardButton("On", callback_data=cb_7.new(act="notifSet", d_1=panel, d_2=vps, d_3="notifyChange", d_4=True, d_5=callback_data["d_5"], d_6=callback_data["d_6"]))
         if notify is False: btn_notify_no.text = "🔘 " + btn_notify_no.text
         elif notify is True: btn_notify_yes.text = "🔘 " + btn_notify_yes.text
 
