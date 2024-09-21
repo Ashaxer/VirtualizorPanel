@@ -212,7 +212,7 @@ async def generate_vps_list(callback_query: types.CallbackQuery, callback_data):
                                                                    d_1=callback_data['d_1'], d_2=vpsid)))
         except:
             pass
-        if len(user.panels.items()) >= ITEM_PER_PAGE: kb.row(btn_Previous, btn_PageNumber, btn_Next)
+        if len(vpslists_items) >= ITEM_PER_PAGE: kb.row(btn_Previous, btn_PageNumber, btn_Next)
         kb.add(btn_removePanel).add(btn_MainMenu)
         await callback_query.message.edit_text(msg, reply_markup=kb)
     except:
@@ -410,4 +410,3 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
-
