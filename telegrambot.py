@@ -20,7 +20,7 @@ def Startup_Notifications():
             for vpsid, vps in panel.vpss.items():
                 if vps.Notification.notify:
                     try:
-                        CheckOn(vps.userid,vps.address,vps.api_key,vps.api_pass,vps.panelid,vps.vpsid,vps.nickname,vps.hostname,vps.ips[0],vps.Notification.warn,vps.Notification.sleep,vps.Notification.warnsleep)
+                        CheckOn(vps.userid,vps.address,vps.api_key,vps.api_pass,vps.panelid,vps.vpsid,vps.nickname,vps.hostname,list(vps.ips.items())[0][1],vps.Notification.warn,vps.Notification.sleep,vps.Notification.warnsleep)
                     except:
                         pass
 
@@ -428,3 +428,4 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
 if __name__ == '__main__':
     Startup_Notifications()
     executor.start_polling(dp, skip_updates=True)
+
