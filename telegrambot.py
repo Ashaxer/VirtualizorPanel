@@ -13,10 +13,20 @@ from notification_handler import CheckOn, CheckOff
 import dotenv
 import socks
 
+def Startup_Notifications():
+    users = cmds.LoadData()
+    for userid, user in users.items():
+        for panelid, panel in user.panels.items():
+            for vpsid, vps in panel.vpss.items():
+                if vps.Notification.notify:
+                    try:
+                        CheckOn(vps.userid,vps.address,vps.api_key,vps.api_pass,vps.panelid,vps.vpsid,vps.nickname,vps.hostname,vps.ips[0],vps.Notification.warn,vps.Notification.sleep,vps.Notification.warnsleep)
+                    except:
+                        pass
 
 API_TOKEN = dotenv.get_key("config.env", "TELEGRAM_BOT_TOKEN")
 TELEGRAM_PROXY = dotenv.get_key("config.env", "TELEGRAM_PROXY")
-ITEM_PER_PAGE=10
+ITEM_PER_PAGE=2
 # States
 class Form(StatesGroup):
     getPanelName = State()
@@ -31,6 +41,7 @@ cb_2 = CallbackData("post", "act", "d_1")
 cb_3 = CallbackData("post", "act", "d_1", "d_2")
 cb_4 = CallbackData("post", "act", "d_1", "d_2", "d_3")
 cb_5 = CallbackData("post", "act", "d_1", "d_2", "d_3", "d_4")
+cb_7 = CallbackData("post", "act", "d_1", "d_2", "d_3", "d_4", "d_5", "d_6")
 
 # Keyboards and Buttons
 btn_MainMenu = InlineKeyboardButton("🏘 Main Menu", callback_data=cb_1.new(act="MainMenu"))
@@ -180,7 +191,7 @@ async def generate_panel_list(callback_query: types.CallbackQuery, callback_data
             panels = list(panels_items)
         kb = InlineKeyboardMarkup()
         for uid, panel in panels:
-            kb.row(InlineKeyboardButton(f"🎛 {panel.nickname}", callback_data=cb_3.new(act="getVPSList", d_1=uid, d_2=0)))
+            kb.row(InlineKeyboardButton(f"🎛 {panel.nickname}", callback_data=cb_4.new(act="getVPSList", d_1=uid, d_2=0, d_3=page)))
         if len(panels_items) >= ITEM_PER_PAGE: kb.row(btn_Previous, btn_PageNumber, btn_Next)
         kb.add(btn_MainMenu)
         await callback_query.message.edit_text("Choose a panel:", reply_markup=kb)
@@ -188,40 +199,43 @@ async def generate_panel_list(callback_query: types.CallbackQuery, callback_data
         await callback_query.answer("Error occurred, Probably using an old message.")
 
 
-@dp.callback_query_handler(cb_3.filter(act="getVPSList"))
+@dp.callback_query_handler(cb_4.filter(act="getVPSList"))
 async def generate_vps_list(callback_query: types.CallbackQuery, callback_data):
+    # d_3 is panel list page
     try:
         kb = InlineKeyboardMarkup()
-        btn_removePanel = InlineKeyboardButton("✖️ Remove Panel", callback_data=cb_2.new(act="removePanel", d_1=callback_data['d_1']))
+        btn_removePanel = InlineKeyboardButton("✖️ Remove Panel", callback_data=cb_4.new(act="removePanel", d_1=callback_data['d_1'],d_2=callback_data['d_2'], d_3=callback_data['d_3']))
         user = cmds.LoadUserData(callback_query.from_user.id)
         msg = user.panels[callback_data['d_1']].GetInfo()
         vpslists_items = user.panels[callback_data['d_1']].VPSList().items()
         page = int(callback_data['d_2'])
+        btn_Back = InlineKeyboardButton("🔙 Back", callback_data=cb_2.new("listPanel", d_1=callback_data["d_3"]))
         if len(vpslists_items) >= ITEM_PER_PAGE:
             last_page = (len(vpslists_items)-1)//ITEM_PER_PAGE
             vpslist = list(vpslists_items)[page*ITEM_PER_PAGE:(page+1)*ITEM_PER_PAGE]
-            btn_Previous = InlineKeyboardButton("◀", callback_data=cb_3.new(act="getVPSList", d_1=callback_data['d_1'], d_2=0 if page == 0 else page - 1))
-            btn_PageNumber = InlineKeyboardButton(f"Page {page+1}", callback_data=cb_3.new(act="getVPSList", d_1=callback_data['d_1'], d_2=page))
-            btn_Next = InlineKeyboardButton("▶", callback_data=cb_3.new(act="getVPSList", d_1=callback_data['d_1'], d_2=last_page if page == last_page else page + 1))
+            btn_Previous = InlineKeyboardButton("◀", callback_data=cb_4.new(act="getVPSList", d_1=callback_data['d_1'], d_2=0 if page == 0 else page - 1, d_3=callback_data["d_3"]))
+            btn_PageNumber = InlineKeyboardButton(f"Page {page+1}", callback_data=cb_4.new(act="getVPSList", d_1=callback_data['d_1'], d_2=page, d_3=callback_data["d_3"]))
+            btn_Next = InlineKeyboardButton("▶", callback_data=cb_4.new(act="getVPSList", d_1=callback_data['d_1'], d_2=last_page if page == last_page else page + 1, d_3=callback_data["d_3"]))
         else:
             vpslist = list(vpslists_items)
         try:
             for vpsid, vps in vpslist:
                 kb.row(InlineKeyboardButton(f"{'🗑' if vps.isObsolete else '🔴' if vps.suspended != '0' or vps.nw_suspended is not None else '🟢'} ({vpsid}) {vps.hostname} {next(iter(vps.ips.values()))}",
-                                            callback_data=cb_3.new(act="getVPS",
-                                                                   d_1=callback_data['d_1'], d_2=vpsid)))
+                                            callback_data=cb_5.new(act="getVPS",
+                                                                   d_1=callback_data['d_1'], d_2=vpsid, d_3=page, d_4=callback_data["d_3"])))
         except:
             pass
         if len(vpslists_items) >= ITEM_PER_PAGE: kb.row(btn_Previous, btn_PageNumber, btn_Next)
-        kb.add(btn_removePanel).add(btn_MainMenu)
+        kb.add(btn_removePanel).row(btn_Back, btn_MainMenu)
         await callback_query.message.edit_text(msg, reply_markup=kb)
     except:
         await callback_query.answer("Error occurred, Probably using an old message.")
 
-@dp.callback_query_handler(cb_3.filter(act="getVPS"))
+@dp.callback_query_handler(cb_5.filter(act="getVPS"))
 async def generate_vps_info(callback_query: types.CallbackQuery, callback_data):
     try:
         user = cmds.LoadUserData(callback_query.from_user.id)
+        btn_Back = InlineKeyboardButton("🔙 Back", callback_data=cb_4.new(act="getVPSList", d_1=callback_data['d_1'], d_2=callback_data["d_3"], d_3=callback_data["d_4"]))
         vpslist = user.panels[callback_data['d_1']].VPSList()
         if vpslist[callback_data['d_2']].Notification.notify:
             noti_btn_txt = "🔔 Notification Settings"
@@ -229,14 +243,14 @@ async def generate_vps_info(callback_query: types.CallbackQuery, callback_data):
             noti_btn_txt = "🔕 Notification Settings"
 
         btn_notify = InlineKeyboardButton(noti_btn_txt,
-                                          callback_data=cb_5.new(act="notifSet", d_1=callback_data['d_1'],
-                                                                 d_2=callback_data['d_2'], d_3=False, d_4=False))
+                                          callback_data=cb_7.new(act="notifSet", d_1=callback_data['d_1'],
+                                                                 d_2=callback_data['d_2'], d_3=False, d_4=False, d_5=callback_data["d_3"], d_6=callback_data["d_4"]))
 
         kb = InlineKeyboardMarkup().add(btn_notify)
         if vpslist[callback_data['d_2']].isObsolete:
             btn_obs = InlineKeyboardButton("🗑 Remove this VPS", callback_data=cb_3.new(act="removeVPSConfirmed",d_1=callback_data['d_1'], d_2=callback_data['d_2']))
             kb.add(btn_obs)
-        kb.add(btn_MainMenu)
+        kb.row(btn_Back, btn_MainMenu)
 
         await callback_query.message.edit_text(vpslist[callback_data['d_2']].MainInfo(), reply_markup=kb)
     except:
@@ -256,13 +270,13 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     except:
         await callback_query.answer("Error occurred, Probably using an old message.")
 
-@dp.callback_query_handler(cb_2.filter(act="removePanel"))
+@dp.callback_query_handler(cb_4.filter(act="removePanel"))
 async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     try:
         user = cmds.LoadUserData(callback_query.from_user.id)
         nickname = user.panels[callback_data['d_1']].nickname
         btn_Yes = InlineKeyboardButton("🗑 Yes", callback_data=cb_2.new(act="removePanelConfirmed", d_1=callback_data["d_1"]))
-        btn_No = InlineKeyboardButton("No", callback_data=cb_3.new(act="getVPSList", d_1=callback_data["d_1"], d_2=0))
+        btn_No = InlineKeyboardButton("No", callback_data=cb_4.new(act="getVPSList", d_1=callback_data["d_1"], d_2=callback_data["d_2"], d_3=callback_data["d_3"]))
         kb = InlineKeyboardMarkup().row(btn_Yes,btn_No)
         await callback_query.message.edit_text(f"Are you sure you want to remove \"{nickname}\" Panel from your panels list?", reply_markup=kb)
     except:
@@ -280,7 +294,7 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     await callback_query.message.edit_text(f"Panel \"{nickname}\" removed from your list.", reply_markup=kb)
 
 
-@dp.callback_query_handler(cb_5.filter(act="notifSet"))
+@dp.callback_query_handler(cb_7.filter(act="notifSet"))
 async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     try:
         user = cmds.LoadUserData(callback_query.from_user.id)
@@ -358,18 +372,19 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
         kb.row(decore_warnsleep,btn_warnsleep_1,btn_warnsleep_2,btn_warnsleep_3)
         kb.row(decore_notify,btn_notify_no,btn_notify_yes)
 
-        btn_save = InlineKeyboardButton("💾 Save", callback_data=cb_3.new(act="notifSave", d_1=panel, d_2=vps))
+        btn_save = InlineKeyboardButton("💾 Save", callback_data=cb_5.new(act="notifSave", d_1=panel, d_2=vps, d_3=callback_data["d_5"], d_4=callback_data["d_6"]))
         kb.add(btn_save).add(btn_MainMenu)
         await callback_query.message.edit_text(msg, reply_markup=kb)
     except:
         await callback_query.answer("Error occurred, Probably using an old message.")
 
-@dp.callback_query_handler(cb_3.filter(act="notifSave"))
+@dp.callback_query_handler(cb_5.filter(act="notifSave"))
 async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
     try:
         user = cmds.LoadUserData(callback_query.from_user.id)
         kb = InlineKeyboardMarkup()
-
+        btn_Back = InlineKeyboardButton("🔙 Back", callback_data=cb_4.new(act="getVPSList", d_1=callback_data['d_1'],
+                                                                         d_2=callback_data["d_3"], d_3=callback_data["d_4"]))
         #Gather information
         userid = callback_query.from_user.id
         panel = callback_data['d_1']
@@ -383,12 +398,14 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
         api_pass = user.panels[panel].api_pass
         panelid = user.panels[panel].panelid
         nickname = user.panels[panel].nickname
+        hostname = user.panels[panel].vpss[vps].hostname
+        vpsip = list(user.panels[panel].vpss[vps].ips.items())[0][1]
 
         #Stop the notification task
         CheckOff(userid, address, api_key, api_pass, panelid, vps, nickname)
 
         #Start the notification task if is enabled
-        if notify: CheckOn(userid, address, api_key, api_pass, panelid, vps, nickname, warn, sleep, warnsleep)
+        if notify: CheckOn(userid, address, api_key, api_pass, panelid, vps, nickname, hostname, vpsip, warn, sleep, warnsleep)
 
         vpslist = user.panels[callback_data['d_1']].VPSList()
 
@@ -398,15 +415,16 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
             btn_text = "🔕 Notification Settings"
 
         btn_notify = InlineKeyboardButton(btn_text,
-                                          callback_data=cb_5.new(act="notifSet", d_1=callback_data['d_1'],
-                                                                 d_2=callback_data['d_2'], d_3=False, d_4=False))
+                                          callback_data=cb_7.new(act="notifSet", d_1=callback_data['d_1'],
+                                                                 d_2=callback_data['d_2'], d_3=False, d_4=False, d_5=callback_data["d_3"], d_6=callback_data["d_4"]))
 
-        kb = InlineKeyboardMarkup().add(btn_notify).add(btn_MainMenu)
+        kb = InlineKeyboardMarkup().add(btn_notify).row(btn_Back, btn_MainMenu)
         await callback_query.message.edit_text("✅ Notification Settings Saved!\n"
-                                               "==============\n"
+                                               "=============="
                                                f"{vpslist[callback_data['d_2']].MainInfo()}", reply_markup=kb)
     except:
         await callback_query.answer("Error occurred, Probably using an old message.")
 
 if __name__ == '__main__':
+    Startup_Notifications()
     executor.start_polling(dp, skip_updates=True)
