@@ -146,8 +146,8 @@ class VirtualizorPanel:
                     vps['os_name'], vps['space'], vps['ram'], vps['cpu'], vps['cores'], vps['bandwidth'], vps['vnc'],
                     vps['vncport'], vps['vnc_passwd'], vps['suspended'], vps['suspend_reason'], vps['nw_suspended'],
                     vps['used_bandwidth'], vps['email'], vps['os_distro'], vps['status'], vps['ips'])
-                SmartSave(self)
-                return self.vpss
+            SmartSave(self)
+            return self.vpss
         except Exception as e:
             print(e)
             return False

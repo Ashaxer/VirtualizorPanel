@@ -16,7 +16,7 @@ import socks
 
 API_TOKEN = dotenv.get_key("config.env", "TELEGRAM_BOT_TOKEN")
 TELEGRAM_PROXY = dotenv.get_key("config.env", "TELEGRAM_PROXY")
-
+ITEM_PER_PAGE=10
 # States
 class Form(StatesGroup):
     getPanelName = State()
@@ -56,7 +56,7 @@ async def send_welcome(message: types.Message):
 
     btn_AddPanel = InlineKeyboardButton("➕ Add Panel",
                                         callback_data=cb_2.new(act="addNewPanelForm", d_1=str(uuid.uuid4())))
-    btn_ListPanel = InlineKeyboardButton("🟰 Panels list", callback_data=cb_1.new(act="listPanel"))
+    btn_ListPanel = InlineKeyboardButton("🟰 Panels list", callback_data=cb_2.new(act="listPanel",d_1=0))
     kb = InlineKeyboardMarkup().add(btn_AddPanel, btn_ListPanel)
     len(user.panels)
     await message.reply(
@@ -73,7 +73,7 @@ async def send_welcome(callback_query: types.CallbackQuery, callback_data):
 
     btn_AddPanel = InlineKeyboardButton("➕ Add Panel",
                                         callback_data=cb_2.new(act="addNewPanelForm", d_1=str(uuid.uuid4())))
-    btn_ListPanel = InlineKeyboardButton("🟰 Panels list", callback_data=cb_1.new(act="listPanel"))
+    btn_ListPanel = InlineKeyboardButton("🟰 Panels list", callback_data=cb_2.new(act="listPanel", d_1=0))
     kb = InlineKeyboardMarkup().add(btn_AddPanel, btn_ListPanel)
     len(user.panels)
     await callback_query.message.edit_text(
@@ -164,33 +164,55 @@ async def process_add_panel(callback_query: types.CallbackQuery, callback_data):
         await callback_query.message.edit_text(f'❌ Invalid data...', reply_markup=kb)
 
 
-@dp.callback_query_handler(cb_1.filter(act="listPanel"))
+@dp.callback_query_handler(cb_2.filter(act="listPanel"))
 async def generate_panel_list(callback_query: types.CallbackQuery, callback_data):
     try:
         user = cmds.LoadUserData(callback_query.from_user.id)
+        page = int(callback_data['d_1'])
+        panels_items = user.panels.items()
+        if len(panels_items) >= ITEM_PER_PAGE:
+            last_page = (len(panels_items)-1)//ITEM_PER_PAGE
+            panels = list(panels_items)[page*ITEM_PER_PAGE:(page+1)*ITEM_PER_PAGE]
+            btn_Previous = InlineKeyboardButton("◀", callback_data=cb_2.new(act="listPanel", d_1=0 if page == 0 else page - 1))
+            btn_PageNumber = InlineKeyboardButton(f"Page {page+1}", callback_data=cb_2.new(act="listPanel", d_1=page))
+            btn_Next = InlineKeyboardButton("▶", callback_data=cb_2.new(act="listPanel", d_1=last_page if page == last_page else page + 1))
+        else:
+            panels = list(panels_items)
         kb = InlineKeyboardMarkup()
-        for uid, panel in user.panels.items():
-            kb.row(InlineKeyboardButton(f"🎛 {panel.nickname}", callback_data=cb_2.new(act="getVPSList", d_1=uid)))
+        for uid, panel in panels:
+            kb.row(InlineKeyboardButton(f"🎛 {panel.nickname}", callback_data=cb_3.new(act="getVPSList", d_1=uid, d_2=0)))
+        if len(panels_items) >= ITEM_PER_PAGE: kb.row(btn_Previous, btn_PageNumber, btn_Next)
         kb.add(btn_MainMenu)
         await callback_query.message.edit_text("Choose a panel:", reply_markup=kb)
     except:
         await callback_query.answer("Error occurred, Probably using an old message.")
 
 
-@dp.callback_query_handler(cb_2.filter(act="getVPSList"))
+@dp.callback_query_handler(cb_3.filter(act="getVPSList"))
 async def generate_vps_list(callback_query: types.CallbackQuery, callback_data):
     try:
         kb = InlineKeyboardMarkup()
         btn_removePanel = InlineKeyboardButton("✖️ Remove Panel", callback_data=cb_2.new(act="removePanel", d_1=callback_data['d_1']))
         user = cmds.LoadUserData(callback_query.from_user.id)
         msg = user.panels[callback_data['d_1']].GetInfo()
+        vpslists_items = user.panels[callback_data['d_1']].VPSList().items()
+        page = int(callback_data['d_2'])
+        if len(vpslists_items) >= ITEM_PER_PAGE:
+            last_page = (len(vpslists_items)-1)//ITEM_PER_PAGE
+            vpslist = list(vpslists_items)[page*ITEM_PER_PAGE:(page+1)*ITEM_PER_PAGE]
+            btn_Previous = InlineKeyboardButton("◀", callback_data=cb_3.new(act="getVPSList", d_1=callback_data['d_1'], d_2=0 if page == 0 else page - 1))
+            btn_PageNumber = InlineKeyboardButton(f"Page {page+1}", callback_data=cb_3.new(act="getVPSList", d_1=callback_data['d_1'], d_2=page))
+            btn_Next = InlineKeyboardButton("▶", callback_data=cb_3.new(act="getVPSList", d_1=callback_data['d_1'], d_2=last_page if page == last_page else page + 1))
+        else:
+            vpslist = list(vpslists_items)
         try:
-            for vpsid, vps in user.panels[callback_data['d_1']].VPSList().items():
-                kb.row(InlineKeyboardButton(f"{'🔴' if vps.isObsolete else '🟢'} ({vpsid}) {vps.hostname} {next(iter(vps.ips.values()))}",
+            for vpsid, vps in vpslist:
+                kb.row(InlineKeyboardButton(f"{'🗑' if vps.isObsolete else '🔴' if vps.suspended != '0' or vps.nw_suspended is not None else '🟢'} ({vpsid}) {vps.hostname} {next(iter(vps.ips.values()))}",
                                             callback_data=cb_3.new(act="getVPS",
                                                                    d_1=callback_data['d_1'], d_2=vpsid)))
         except:
             pass
+        if len(user.panels.items()) >= ITEM_PER_PAGE: kb.row(btn_Previous, btn_PageNumber, btn_Next)
         kb.add(btn_removePanel).add(btn_MainMenu)
         await callback_query.message.edit_text(msg, reply_markup=kb)
     except:
@@ -240,7 +262,7 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
         user = cmds.LoadUserData(callback_query.from_user.id)
         nickname = user.panels[callback_data['d_1']].nickname
         btn_Yes = InlineKeyboardButton("🗑 Yes", callback_data=cb_2.new(act="removePanelConfirmed", d_1=callback_data["d_1"]))
-        btn_No = InlineKeyboardButton("No", callback_data=cb_2.new(act="getVPSList", d_1=callback_data["d_1"]))
+        btn_No = InlineKeyboardButton("No", callback_data=cb_3.new(act="getVPSList", d_1=callback_data["d_1"], d_2=0))
         kb = InlineKeyboardMarkup().row(btn_Yes,btn_No)
         await callback_query.message.edit_text(f"Are you sure you want to remove \"{nickname}\" Panel from your panels list?", reply_markup=kb)
     except:
