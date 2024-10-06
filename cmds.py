@@ -315,7 +315,7 @@ VPS ID: {self.vpsid}
 ==============
 IPs: {IPs}
 OS: {self.os_name}
-CPU: {self.cores} * {float(self.cpu)/1000} GHz
+CPU: {self.cores} Core
 RAM: {float(self.ram)/1024} GB
 SPACE: {int(self.space)} GB
 Bandwidth: {float(self.used_bandwidth)} / {float(self.bandwidth)} GB ({round(float(self.used_bandwidth)/float(self.bandwidth)*100,2)} %)
