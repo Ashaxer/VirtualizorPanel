@@ -25,7 +25,7 @@ def Notify(msg, chat_id):
     requests.get(url, params=params, proxies=proxies)
 
 
-def CheckStatus(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, tsleep, warnsleep, stop_event):
+def CheckStatus(userid, address, api_key, api_pass, panelid, vpsid, nickname, hostname, vpsip, warn, tsleep, warnsleep, stop_event):
     while not stop_event.is_set():
         print(f"[{nickname}] Checking...")
         params = {
@@ -43,8 +43,9 @@ def CheckStatus(userid, address, api_key, api_pass, panelid, vpsid, nickname, wa
             print(f'[{nickname}] FREE GB: {response["info"]["bandwidth"]["free_gb"]}')
             if response["info"]["bandwidth"]["free_gb"] < warn:
                 msg = f'''🔴 Traffic is reaching Quota
-🎛 Panel {nickname}
-🖥 VPS ID {vpsid}
+🎛 Panel: {nickname}
+🖥 VPS Name: {hostname}
+🌐 IP: {vpsip}
 📈 Usage: {response["info"]["bandwidth"]["used_gb"]}/{response["info"]["bandwidth"]["limit_gb"]}
 📊 Remaining: {response["info"]["bandwidth"]["free_gb"]}'''
                 print(f'[{nickname}] Sending message to telegram...')
@@ -68,7 +69,7 @@ def CheckStatus(userid, address, api_key, api_pass, panelid, vpsid, nickname, wa
                     return
                 time.sleep(5)
 
-def CheckOn(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, tsleep, warnsleep):
+def CheckOn(userid, address, api_key, api_pass, panelid, vpsid, nickname, hostname, vpsip, warn, tsleep, warnsleep):
     global threads
     thread_key = (userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, tsleep, warnsleep)
 
@@ -79,7 +80,7 @@ def CheckOn(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, 
 
         # Create a new stop event
         stop_event = threading.Event()
-        thread = threading.Thread(target=CheckStatus, args=(userid, address, api_key, api_pass, panelid, vpsid, nickname, warn, tsleep, warnsleep, stop_event))
+        thread = threading.Thread(target=CheckStatus, args=(userid, address, api_key, api_pass, panelid, vpsid, nickname, hostname, vpsip, warn, tsleep, warnsleep, stop_event))
         threads[thread_key] = (thread, stop_event)
         thread.start()
         print(f"Started thread with args: {userid}, {address}, {api_key}, {api_pass}, {panelid}, {vpsid}, {nickname}, {warn}, {tsleep}, {warnsleep}")
