@@ -131,6 +131,8 @@ class VirtualizorPanel:
         self.CheckObsolete(result)
         try:
             Json = result.json()["vs"]
+            if len(Json) == 0:
+                return {}
             for vpsid, vps in Json.items():
                 if vpsid not in self.vpss:
                     self.vpss[vpsid] = VPS(
@@ -327,6 +329,8 @@ Panel Email: {self.email}"""
 
     def NotiLogVPS(self):
         result = self.Notification.Info()
+        result["ip"] = list(self.ips.items())[0][1]
+        result["hostname"] = self.hostname
         return result
 
 class Notification:
@@ -379,7 +383,7 @@ def NotificationHandleCheck(user=None):
             for uid, user in users.items():
                 for info in user.NotiLog():
                     if info['Notify']:
-                        CheckOn(uid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info['warn'], info['sleep'], info['warnsleep'])
+                        CheckOn(uid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info["hostname"], info["ip"], info['warn'], info['sleep'], info['warnsleep'])
                     else:
                         CheckOff(uid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'])
         except:
@@ -388,7 +392,7 @@ def NotificationHandleCheck(user=None):
         try:
             for info in user.NotiLog():
                 if info['Notify']:
-                    CheckOn(user.userid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info['warn'], info['sleep'], info['warnsleep'])
+                    CheckOn(user.userid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info["hostname"], info["ip"], info['warn'], info['sleep'], info['warnsleep'])
                 else:
                     CheckOff(user.userid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'])
         except:
@@ -398,7 +402,7 @@ def NotificationHandleCheck(user=None):
         try:
             for info in user.NotiLog():
                 if info['Notify']:
-                    CheckOn(user.userid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info['warn'], info['sleep'], info['warnsleep'])
+                    CheckOn(user.userid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'], info["hostname"], info["ip"], info['warn'], info['sleep'], info['warnsleep'])
                 else:
                     CheckOff(user.userid, info['address'], info['api_key'], info['api_pass'], info['panelid'], info['vpsid'], info['nickname'])
         except:
