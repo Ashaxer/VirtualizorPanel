@@ -10,11 +10,16 @@ Multiple Virtualizor Panel and VPS Manager with Bandwidth Checker and Notifier o
 | Free & Easy to Use  |  ✅  |
 
 # Screenshots
-![](imgs/ss_(1).png)
+<p align="center">
+  <img src="imgs/ss_(1).png" alt="Screenshot 1">
+  <br>
+  <img src="imgs/ss_(2).png" alt="Screenshot 2" height="250">
+  <img src="imgs/ss_(3).png" alt="Screenshot 3" height="250">
+  <br>
+  <img src="imgs/ss_(4).png" alt="Screenshot 4" height="420">
+  <img src="imgs/ss_(5).png" alt="Screenshot 5" height="420">
+</p>
 
-![](imgs/ss_(2).png) ![](imgs/ss_(3).png)
-
-![](imgs/ss_(4).png) ![](imgs/ss_(5).png)
 
 # What you need
 
