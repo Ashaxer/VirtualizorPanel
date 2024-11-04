@@ -1,6 +1,21 @@
 # VirtualizorPanel
 Multiple Virtualizor Panel and VPS Manager with Bandwidth Checker and Notifier option under TelegramBot
 
+| Feature  | Supported |
+|-----|:-----:|
+| Adding Unlimited Panels  |  ✅  |
+| Adding Unlimited VPSs  |  ✅  |
+| Fully VPS-Level Customizable |  ✅  |
+| Real-Time Info Update  |  ✅  |
+| Free & Easy to Use  |  ✅  |
+
+# Screenshots
+![](imgs/1.png)
+
+![](imgs/2.png) ![](imgs/3.png)
+
+![](imgs/4.png) ![](imgs/5.png)
+
 # What you need
 
 ## Telegram Bot
