@@ -464,4 +464,6 @@ def LoadData():
         with open('database.pkl', 'rb') as dbf:
             return pickle.load(dbf)
     except:
+        with open('database.pkl', 'wb') as dbf:
+            pickle.dump({}, dbf)
         return False

@@ -433,5 +433,8 @@ async def toggle_notify(callback_query: types.CallbackQuery, callback_data):
         await callback_query.answer("Error occurred, Probably using an old message.")
 
 if __name__ == '__main__':
-    Startup_Notifications()
+    try:
+        Startup_Notifications()
+    except:
+        print("No database found, looks like a fresh start...")
     executor.start_polling(dp, skip_updates=True)
